@@ -3,7 +3,7 @@ server:
 
 database:
   driver: "postgres"
-  host: "localhost"
+  host: "database"
   port: 5432
   user: "postgres"
   password: "0000"

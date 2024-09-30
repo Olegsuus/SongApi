@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/spf13/viper"
 	"log"
+	"os"
 )
 
 type ServerConfig struct {
@@ -35,8 +36,14 @@ func GetConfig() *Config {
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
-		log.Fatalf("Unable decode into struct, %v", err)
+		log.Fatalf("Unable to decode into struct, %v", err)
 	}
+
+	// Переопределяем конфиг из переменных окружения
+	cfg.Database.User = os.Getenv("POSTGRES_USER")
+	cfg.Database.Password = os.Getenv("POSTGRES_PASSWORD")
+	cfg.Database.DBName = os.Getenv("POSTGRES_DB")
+	cfg.Database.Host = "db" // Используем имя сервиса в Docker Compose
 
 	return &cfg
 }
