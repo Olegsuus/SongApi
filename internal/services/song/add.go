@@ -15,7 +15,7 @@ func (s *SongService) Add(group, song string) (*models.Song, error) {
 
 	externalData, err := s.fetchSongDetails(group, song)
 	if err != nil {
-		s.l.Error("Failed to fetch song details from external API", "group", group, "song", song, "error", err)
+		s.l.Error("Не удалось получить данные о песне через внешние API", "group", group, "song", song, "error", err)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -29,19 +29,21 @@ func (s *SongService) Add(group, song string) (*models.Song, error) {
 		UpdatedAt:   time.Now(),
 	}
 
+	// Добавляем песню в базу данных
 	id, err := s.srP.Add(storageSong)
 	if err != nil {
-		s.l.Error("Failed to add song to database", "error", err)
+		s.l.Error("Не удалось добавить песню в базу данных", "ошибка", err)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	storageSong.ID = id
 	modelSong, err := s.TranslatorToModels(storageSong)
 	if err != nil {
-		s.l.Error("Failed to translate storage model to client model", "error", err)
+		s.l.Error("Не удалось преобразовать данные из базы в модель", "ошибка", err)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	s.l.Info("Successfully added new song", "id", modelSong.ID)
+	s.l.Info("Успешно добавлена новая песня", "id", modelSong.ID)
+
 	return modelSong, nil
 }

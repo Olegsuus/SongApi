@@ -16,6 +16,9 @@ func (h *SongHandlers) GetMany(c echo.Context) error {
 	if getManySong.Page < 1 {
 		getManySong.Page = 1
 	}
+	if getManySong.Size < 1 {
+		getManySong.Size = 5
+	}
 
 	offset := (getManySong.Page - 1) * getManySong.Size
 
@@ -23,6 +26,7 @@ func (h *SongHandlers) GetMany(c echo.Context) error {
 		getManySong.Group, getManySong.Song,
 		getManySong.ReleaseDate, getManySong.Text,
 		getManySong.Link, getManySong.Size, offset,
+		getManySong.SortBy, getManySong.SortOrder,
 	)
 
 	if err != nil {

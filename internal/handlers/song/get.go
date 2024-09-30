@@ -28,6 +28,9 @@ func (h *SongHandlers) GetSongText(c echo.Context) error {
 	if getSong.Page < 1 {
 		getSong.Page = 1
 	}
+	if getSong.Size < 1 {
+		getSong.Size = 1
+	}
 
 	text, err := h.Service.GetText(id, getSong.Page, getSong.Size)
 	if err != nil {

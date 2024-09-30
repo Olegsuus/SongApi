@@ -13,7 +13,7 @@ type SongService struct {
 type ServiceProvider interface {
 	Add(song *storage_models.Song) (int, error)
 	GetText(id int) (*storage_models.Song, error)
-	GetMany(group, song, releaseDate, text, link string, limit, offset int) ([]*storage_models.Song, error)
+	GetMany(group, song, releaseDate, text, link string, limit, offset int, sortBy, sortOrder string) ([]*storage_models.Song, error)
 	Update(song *storage_models.Song) error
 	Remove(id int) error
 }

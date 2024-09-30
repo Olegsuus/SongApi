@@ -14,8 +14,8 @@ type Song struct {
 }
 
 type AddSongDTO struct {
-	Group string `json:"group" validate:"required"`
-	Song  string `json:"song" validate:"required"`
+	Group string `json:"group"`
+	Song  string `json:"song"`
 }
 
 type RemoveDTO struct {
@@ -36,8 +36,10 @@ type GetManySong struct {
 	ReleaseDate string `query:"release_date"`
 	Text        string `query:"text"`
 	Link        string `query:"link"`
-	Size        int    `query:"size,default=5"`
-	Page        int    `query:"page,default=1"`
+	Size        int    `query:"size"`
+	Page        int    `query:"page"`
+	SortBy      string `query:"sort_by"`    // Новое поле
+	SortOrder   string `query:"sort_order"` // Новое поле ("asc" или "desc")
 }
 
 type GetManySongs struct {
@@ -47,8 +49,8 @@ type GetManySongs struct {
 }
 
 type GetSongText struct {
-	Page int `query:"page,default=1"`
-	Size int `query:"size,default=1"`
+	Page int `query:"page"`
+	Size int `query:"size"`
 }
 
 type SongText struct {

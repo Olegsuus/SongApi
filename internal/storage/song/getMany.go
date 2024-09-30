@@ -5,20 +5,37 @@ import (
 	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
 )
 
-func (s *SongStorage) GetMany(group, song, releaseDate, text, link string, limit, offset int) ([]*storage_models.Song, error) {
-	const op = "song_storage.get_all"
+func (s *SongStorage) GetMany(group, song, releaseDate, text, link string, limit, offset int, sortBy, sortOrder string) ([]*storage_models.Song, error) {
+	const op = "song_storage.get_many"
 
-	query := `
-		SELECT id, "group", song, release_date, text, link, created_at, updated_at 
-		FROM songs 
-		WHERE 
-			($1 = '' OR "group" = $1) AND
-			($2 = '' OR song = $2) AND
-			($3 = '' OR release_date = $3) AND
-			($4 = '' OR text ILIKE '%' || $4 || '%') AND
-			($5 = '' OR link = $5)
-		ORDER BY created_at DESC 
-		LIMIT $6 OFFSET $7`
+	if sortOrder != "asc" && sortOrder != "desc" {
+		sortOrder = "asc"
+	}
+
+	validSortFields := map[string]bool{
+		"id":           true,
+		"group":        true,
+		"song":         true,
+		"release_date": true,
+		"created_at":   true,
+		"updated_at":   true,
+	}
+
+	if !validSortFields[sortBy] {
+		sortBy = "created_at"
+	}
+
+	query := fmt.Sprintf(`
+        SELECT id, "group", song, release_date, text, link, created_at, updated_at 
+        FROM songs 
+        WHERE 
+            ($1 = '' OR "group" = $1) AND
+            ($2 = '' OR song = $2) AND
+            ($3 = '' OR release_date = $3) AND
+            ($4 = '' OR text ILIKE '%%' || $4 || '%%') AND
+            ($5 = '' OR link = $5)
+        ORDER BY %s %s
+        LIMIT $6 OFFSET $7`, sortBy, sortOrder)
 
 	rows, err := s.DB.Query(query, group, song, releaseDate, text, link, limit, offset)
 	if err != nil {
