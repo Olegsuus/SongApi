@@ -8,48 +8,13 @@ import (
 )
 
 type ExternalAPI struct {
-	ReleaseDate string `json:"releaseDate"`
+	ReleaseDate string `json:"release_date" db:"release_date"`
 	Text        string `json:"text"`
 	Link        string `json:"link"`
 }
 
-//func (s *SongService) fetchSongDetails(group, song string) (*ExternalAPI, error) {
-//	const op = "song_services.fetchSongDetails"
-//
-//	groupEncoded := url.QueryEscape(group)
-//	songEncoded := url.QueryEscape(song)
-//
-//	// Формирование URL согласно Swagger
-//	apiURL := fmt.Sprintf("http://localhost:8888/info?group=%s&song=%s", groupEncoded, songEncoded)
-//
-//	// Создание запроса
-//	req, err := http.NewRequest("GET", apiURL, nil)
-//	if err != nil {
-//		return nil, fmt.Errorf("%s: %w", op, err)
-//	}
-//
-//	client := &http.Client{}
-//	resp, err := client.Do(req)
-//	if err != nil {
-//		return nil, fmt.Errorf("%s: %w", op, err)
-//	}
-//	defer resp.Body.Close()
-//
-//	if resp.StatusCode != http.StatusOK {
-//		return nil, fmt.Errorf("%s: external API returned status code %d", op, resp.StatusCode)
-//	}
-//
-//	// Парсинг ответа
-//	var apiResponse ExternalAPI
-//	if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
-//		return nil, fmt.Errorf("%s: failed to decode API response: %w", op, err)
-//	}
-//
-//	return &apiResponse, nil
-//}
-
 func fetchFromLastFM(group, song string) (string, string, error) {
-	apiKey := "402e569eec4332ba53a56a0b377e5e13" // Замените на ваш API ключ Last.fm
+	apiKey := "402e569eec4332ba53a56a0b377e5e13"
 
 	groupEncoded := url.QueryEscape(group)
 	songEncoded := url.QueryEscape(song)
@@ -73,7 +38,7 @@ func fetchFromLastFM(group, song string) (string, string, error) {
 		Track struct {
 			URL   string `json:"url"`
 			Album struct {
-				ReleaseDate string `json:"releasedate"`
+				ReleaseDate string `json:"releaseDate"`
 			} `json:"album"`
 		} `json:"track"`
 	}
@@ -115,7 +80,6 @@ func fetchLyrics(group, song string) (string, error) {
 	return result.Lyrics, nil
 }
 
-// Функция для объединения данных из Last.fm и Lyrics.ovh
 func (s *SongService) fetchSongDetails(group, song string) (*ExternalAPI, error) {
 	const op = "song_services.fetchSongDetails"
 
