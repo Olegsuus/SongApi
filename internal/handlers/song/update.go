@@ -23,10 +23,6 @@ func (h *SongHandlers) Update(c echo.Context) error {
 		return errors.ErrorsHandler(c, err, http.StatusBadRequest, "Ошибочные данные для изменения")
 	}
 
-	if err := c.Validate(&dto); err != nil {
-		return errors.ErrorsHandler(c, err, http.StatusBadRequest, "Не пройдена валидация")
-	}
-
 	song := &models.Song{
 		ID:          id,
 		Group:       dto.Group,

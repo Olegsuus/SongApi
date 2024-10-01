@@ -14,7 +14,7 @@ type SongHandlersProvider interface {
 	Add(group, song string) (*models.Song, error)
 	Update(song *models.Song) error
 	GetText(id, page, size int) (*models.SongText, error)
-	GetMany(group, song, releaseDate, text, link string, limit, offset int, sortBy, sortOrder string) ([]*models.Song, error)
+	GetMany(getManyS models.GetManySong, limit, offset int, sortFields []string, isAscending bool) ([]*models.Song, error)
 	Remove(id int) error
 }
 

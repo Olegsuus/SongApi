@@ -21,15 +21,12 @@ func (h *SongHandlers) GetSongText(c echo.Context) error {
 	}
 
 	var getSong models.GetSongText
-	if err := c.Bind(&getSong); err != nil {
+	if err = c.Bind(&getSong); err != nil {
 		return errors.ErrorsHandler(c, err, http.StatusBadRequest, "Invalid request parameters")
 	}
 
 	if getSong.Page < 1 {
 		getSong.Page = 1
-	}
-	if getSong.Size < 1 {
-		getSong.Size = 1
 	}
 
 	text, err := h.Service.GetText(id, getSong.Page, getSong.Size)

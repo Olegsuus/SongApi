@@ -1,6 +1,7 @@
 package song_services
 
 import (
+	"github.com/Olegsuus/SongApi/internal/models"
 	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
 	"log/slog"
 )
@@ -13,7 +14,7 @@ type SongService struct {
 type ServiceProvider interface {
 	Add(song *storage_models.Song) (int, error)
 	GetText(id int) (*storage_models.Song, error)
-	GetMany(group, song, releaseDate, text, link string, limit, offset int, sortBy, sortOrder string) ([]*storage_models.Song, error)
+	GetMany(getManyS models.GetManySong, limit, offset int, sortFields []string, isAscending bool) ([]*storage_models.Song, error)
 	Update(song *storage_models.Song) error
 	Remove(id int) error
 }

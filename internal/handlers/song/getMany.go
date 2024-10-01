@@ -5,38 +5,60 @@ import (
 	"github.com/Olegsuus/SongApi/internal/models"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 func (h *SongHandlers) GetMany(c echo.Context) error {
 	var getManySong models.GetManySong
-	if err := c.Bind(&getManySong); err != nil {
-		return errors.ErrorsHandler(c, err, http.StatusBadRequest, "Invalid request parameters")
+
+	pageParam := c.QueryParam("page")
+	sizeParam := c.QueryParam("size")
+
+	page, err := strconv.Atoi(pageParam)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	size, err := strconv.Atoi(sizeParam)
+	if err != nil || size < 1 {
+		size = 5
 	}
 
-	if getManySong.Page < 1 {
-		getManySong.Page = 1
-	}
-	if getManySong.Size < 1 {
-		getManySong.Size = 5
+	offset := (page - 1) * size
+
+	sortFields := []string{}
+	validSortFields := []string{"group", "song", "releaseDate", "text", "link"}
+
+	for _, field := range validSortFields {
+		if c.QueryParam(field) == "true" {
+			sortFields = append(sortFields, field)
+		}
 	}
 
-	offset := (getManySong.Page - 1) * getManySong.Size
+	isAscending := true
+	isAscendingParam := c.QueryParam("isAscending")
+	if isAscendingParam != "" {
+		isAscending, err = strconv.ParseBool(isAscendingParam)
+		if err != nil {
+			return errors.ErrorsHandler(c, err, http.StatusBadRequest, "Параметр isAscending должен быть true или false")
+		}
+	}
 
-	songs, err := h.Service.GetMany(
-		getManySong.Group, getManySong.Song,
-		getManySong.ReleaseDate, getManySong.Text,
-		getManySong.Link, getManySong.Size, offset,
-		getManySong.SortBy, getManySong.SortOrder,
-	)
+	getManySong.Group = c.QueryParam("groupFilter")
+	getManySong.Song = c.QueryParam("songFilter")
+	getManySong.ReleaseDate = c.QueryParam("releaseDateFilter")
+	getManySong.Text = c.QueryParam("textFilter")
+	getManySong.Link = c.QueryParam("linkFilter")
+
+	songs, err := h.Service.GetMany(getManySong, size, offset, sortFields, isAscending)
 
 	if err != nil {
-		return errors.ErrorsHandler(c, err, http.StatusInternalServerError, "Failed to retrieve songs")
+		return errors.ErrorsHandler(c, err, http.StatusInternalServerError, "Не удалось получить список песен")
 	}
 
 	response := models.GetManySongs{
 		Songs: songs,
-		Page:  getManySong.Page,
-		Size:  getManySong.Size,
+		Page:  page,
+		Size:  size,
 	}
 
 	return c.JSON(http.StatusOK, response)

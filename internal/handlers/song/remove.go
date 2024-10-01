@@ -34,5 +34,5 @@ func (h *SongHandlers) Remove(c echo.Context) error {
 		Success: true,
 	}
 
-	return c.JSON(http.StatusNoContent, resp)
+	return c.JSON(http.StatusOK, resp)
 }

@@ -33,7 +33,7 @@ func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 
 	totalVerses := len(cleanedVerses)
 	if size <= 0 {
-		size = 1
+		size = totalVerses
 	}
 
 	startIndex := (page - 1) * size
@@ -45,7 +45,6 @@ func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 			Lyrics: []string{},
 			Page:   page,
 			Size:   size,
-			Total:  totalVerses,
 		}, nil
 	}
 
@@ -63,6 +62,5 @@ func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 		Lyrics: cleanedVerses[startIndex:endIndex],
 		Page:   page,
 		Size:   size,
-		Total:  totalVerses,
 	}, nil
 }

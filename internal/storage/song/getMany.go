@@ -2,27 +2,37 @@ package song_storage
 
 import (
 	"fmt"
+	"github.com/Olegsuus/SongApi/internal/models"
 	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
+	"strings"
 )
 
-func (s *SongStorage) GetMany(group, song, releaseDate, text, link string, limit, offset int, sortBy, sortOrder string) ([]*storage_models.Song, error) {
+func (s *SongStorage) GetMany(getManyS models.GetManySong, limit, offset int, sortFields []string, isAscending bool) ([]*storage_models.Song, error) {
 	const op = "song_storage.get_many"
 
-	if sortOrder != "asc" && sortOrder != "desc" {
-		sortOrder = "asc"
+	validSortFields := map[string]string{
+		"group":       "\"group\"",
+		"song":        "song",
+		"releaseDate": "release_date",
+		"text":        "text",
+		"link":        "link",
 	}
 
-	validSortFields := map[string]bool{
-		"id":           true,
-		"group":        true,
-		"song":         true,
-		"release_date": true,
-		"created_at":   true,
-		"updated_at":   true,
+	sortClauses := []string{}
+	for _, field := range sortFields {
+		if column, ok := validSortFields[field]; ok {
+			sortClauses = append(sortClauses, column)
+		}
 	}
 
-	if !validSortFields[sortBy] {
-		sortBy = "created_at"
+	sortOrder := "ASC"
+	if !isAscending {
+		sortOrder = "DESC"
+	}
+
+	sortClause := ""
+	if len(sortClauses) > 0 {
+		sortClause = fmt.Sprintf("ORDER BY %s %s", strings.Join(sortClauses, ", "), sortOrder)
 	}
 
 	query := fmt.Sprintf(`
@@ -34,10 +44,10 @@ func (s *SongStorage) GetMany(group, song, releaseDate, text, link string, limit
             ($3 = '' OR release_date = $3) AND
             ($4 = '' OR text ILIKE '%%' || $4 || '%%') AND
             ($5 = '' OR link = $5)
-        ORDER BY %s %s
-        LIMIT $6 OFFSET $7`, sortBy, sortOrder)
+        %s
+        LIMIT $6 OFFSET $7`, sortClause)
 
-	rows, err := s.DB.Query(query, group, song, releaseDate, text, link, limit, offset)
+	rows, err := s.DB.Query(query, getManyS.Group, getManyS.Song, getManyS.ReleaseDate, getManyS.Text, getManyS.Link, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
