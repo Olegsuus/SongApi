@@ -16,6 +16,7 @@ func (db *DataBase) GetStorage(cfg *config.Config) {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		cfg.Database.Host, cfg.Database.Port, cfg.Database.User, cfg.Database.Password, cfg.Database.DBName)
 
+	fmt.Println(dsn)
 	var err error
 	db.DB, err = sql.Open("postgres", dsn)
 	if err != nil {
