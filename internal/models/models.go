@@ -37,6 +37,7 @@ type SongText struct {
 	Group  string   `json:"group"`
 	Song   string   `json:"song"`
 	Lyrics []string `json:"lyrics"`
+	Link   string   `json:"link"`
 	Page   int      `json:"page"`
 	Size   int      `json:"size"`
 }

@@ -3,7 +3,7 @@ package song_services
 import (
 	"fmt"
 	"github.com/Olegsuus/SongApi/internal/models"
-	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
+	storagModels "github.com/Olegsuus/SongApi/internal/storage/models"
 	"log/slog"
 	"time"
 )
@@ -19,7 +19,7 @@ func (s *SongService) Add(group, song string) (*models.Song, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	storageSong := &storage_models.Song{
+	storageSong := &storagModels.Song{
 		Group:       group,
 		Song:        song,
 		ReleaseDate: externalData.ReleaseDate,
@@ -29,7 +29,6 @@ func (s *SongService) Add(group, song string) (*models.Song, error) {
 		UpdatedAt:   time.Now(),
 	}
 
-	// Добавляем песню в базу данных
 	id, err := s.srP.Add(storageSong)
 	if err != nil {
 		s.l.Error("Не удалось добавить песню в базу данных", "ошибка", err)

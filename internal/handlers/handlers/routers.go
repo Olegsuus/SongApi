@@ -1,6 +1,8 @@
 package handlers
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+)
 
 func (h *Handler) RegisterRouters(e *echo.Echo) {
 	e.POST("/song", h.SongHandler.Add)

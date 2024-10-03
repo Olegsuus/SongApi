@@ -1,6 +1,8 @@
 package song_handlers
 
 import (
+	"database/sql"
+	errors2 "errors"
 	"github.com/Olegsuus/SongApi/internal/handlers/errors"
 	"github.com/Olegsuus/SongApi/internal/handlers/response"
 	"github.com/labstack/echo/v4"
@@ -9,6 +11,16 @@ import (
 	"strconv"
 )
 
+// Remove        godoc
+// @Summary      Remove a song
+// @Description  Deletes a song by its ID
+// @Tags         Song
+// @Param        id   path      int  true  "Song ID"
+// @Success      200  {object}  response.SuccessResponse "Successfully deleted the song"
+// @Failure      400  "Invalid ID format"
+// @Failure      404  "Song not found"
+// @Failure      500  "Internal server error"
+// @Router       /song/{id} [delete]
 func (h *SongHandlers) Remove(c echo.Context) error {
 	const op = "song_handlers.remove"
 
@@ -22,7 +34,7 @@ func (h *SongHandlers) Remove(c echo.Context) error {
 
 	err = h.Service.Remove(id)
 	if err != nil {
-		if err.Error() == "song with id "+strconv.Itoa(id)+" not found" {
+		if errors2.Is(err, sql.ErrNoRows) {
 			return errors.ErrorsHandler(c, err, http.StatusNotFound, "Музыка не найдена")
 		}
 		return errors.ErrorsHandler(c, err, http.StatusInternalServerError, "Failed to delete song")

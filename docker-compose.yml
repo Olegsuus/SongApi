@@ -22,7 +22,7 @@ services:
       - app-network
 
   database:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_DB: EffectiveMobile
       POSTGRES_USER: postgres

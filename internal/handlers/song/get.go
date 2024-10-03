@@ -9,6 +9,19 @@ import (
 	"strconv"
 )
 
+// GetSongText     godoc
+// @Summary      Get song lyrics
+// @Description  Retrieves the text (lyrics) of a song by its ID with pagination support
+// @Tags         Song
+// @Accept       json
+// @Produce      json
+// @Param        id    path     int     true  "Song ID"
+// @Param        page  query    int     false "Page number (default is 1)"
+// @Param        size  query    int     false "Page size (default is 5)"
+// @Success      200   {object} string  "Successfully retrieved the song lyrics"
+// @Failure      400   "Invalid song ID or request parameters"
+// @Failure      500   "Failed to retrieve song lyrics"
+// @Router       /song/{id} [get]
 func (h *SongHandlers) GetSongText(c echo.Context) error {
 	const op = "song_handlers.GetSongText"
 
@@ -31,7 +44,7 @@ func (h *SongHandlers) GetSongText(c echo.Context) error {
 
 	text, err := h.Service.GetText(id, getSong.Page, getSong.Size)
 	if err != nil {
-		return errors.ErrorsHandler(c, err, http.StatusInternalServerError, "Failed to retrieve song lyrics")
+		return errors.ErrorsHandler(c, err, http.StatusBadRequest, "Песня с таким id не найдена")
 	}
 
 	return c.JSON(http.StatusOK, text)

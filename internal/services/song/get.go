@@ -4,11 +4,8 @@ import (
 	"fmt"
 	"github.com/Olegsuus/SongApi/internal/models"
 	"log/slog"
-	"regexp"
 	"strings"
 )
-
-var verseSplitter = regexp.MustCompile(`(\r?\n){2,}`)
 
 func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 	const op = "song_services.GetText"
@@ -17,17 +14,20 @@ func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 
 	songStorage, err := s.srP.GetText(id)
 	if err != nil {
-		s.l.Error("Failed to get song", "id", id, "error", err)
-		return nil, fmt.Errorf("%s: %w", op, err)
+		s.l.Error("Не удалось получить песню", "id", id, "error", err)
+		fmt.Errorf("%s: %w", op, err)
+		return nil, err
 	}
 
-	verses := verseSplitter.Split(songStorage.Text, -1)
+	cleanedText := strings.ReplaceAll(songStorage.Text, "\r\n", "\n")
+
+	lines := strings.Split(cleanedText, "\n")
 
 	var cleanedVerses []string
-	for _, verse := range verses {
-		verse = strings.TrimSpace(verse)
-		if verse != "" {
-			cleanedVerses = append(cleanedVerses, verse)
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			cleanedVerses = append(cleanedVerses, line)
 		}
 	}
 
@@ -43,6 +43,7 @@ func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 			Group:  songStorage.Group,
 			Song:   songStorage.Song,
 			Lyrics: []string{},
+			Link:   songStorage.Link,
 			Page:   page,
 			Size:   size,
 		}, nil
@@ -53,13 +54,14 @@ func (s *SongService) GetText(id, page, size int) (*models.SongText, error) {
 		endIndex = totalVerses
 	}
 
-	s.l.Info("Successfully retrieved song text")
+	s.l.Info("Успешно получили текст песни")
 
 	return &models.SongText{
 		ID:     songStorage.ID,
 		Group:  songStorage.Group,
 		Song:   songStorage.Song,
 		Lyrics: cleanedVerses[startIndex:endIndex],
+		Link:   songStorage.Link,
 		Page:   page,
 		Size:   size,
 	}, nil

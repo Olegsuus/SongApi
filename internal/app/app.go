@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/Olegsuus/SongApi/internal/config"
 	"github.com/Olegsuus/SongApi/internal/handlers/handlers"
-	song_handlers "github.com/Olegsuus/SongApi/internal/handlers/song"
-	song_services "github.com/Olegsuus/SongApi/internal/services/song"
+	songHandler "github.com/Olegsuus/SongApi/internal/handlers/song"
+	songService "github.com/Olegsuus/SongApi/internal/services/song"
 	"github.com/Olegsuus/SongApi/internal/storage"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -27,9 +27,9 @@ func NewApp(cfg *config.Config, store *storage.Storage, logger *slog.Logger) *Ap
 }
 
 func (a *App) InitializeHandlers(store *storage.Storage) {
-	songService := song_services.NewSongService(a.Logger, store.SongStorage)
+	songService := songService.NewSongService(a.Logger, store.SongStorage)
 
-	songHandler := song_handlers.NewSongHandlers(songService, a.Logger)
+	songHandler := songHandler.NewSongHandlers(songService, a.Logger)
 
 	a.Handlers = handlers.NewHandler(songHandler)
 }
@@ -39,6 +39,11 @@ func (a *App) Start(store *storage.Storage) error {
 
 	a.Echo.Use(middleware.Logger())
 	a.Echo.Use(middleware.Recover())
+
+	a.Echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8080"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PATCH, echo.DELETE},
+	}))
 
 	a.InitializeHandlers(store)
 

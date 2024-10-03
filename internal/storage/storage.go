@@ -2,15 +2,15 @@ package storage
 
 import (
 	"database/sql"
-	song_storage "github.com/Olegsuus/SongApi/internal/storage/song"
+	storageModels "github.com/Olegsuus/SongApi/internal/storage/song"
 )
 
 type Storage struct {
-	SongStorage *song_storage.SongStorage
+	SongStorage *storageModels.SongStorage
 }
 
 func NewStorage(db *sql.DB) *Storage {
 	return &Storage{
-		SongStorage: song_storage.NewSongStorage(db),
+		SongStorage: storageModels.NewSongStorage(db),
 	}
 }

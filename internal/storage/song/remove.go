@@ -1,6 +1,9 @@
 package song_storage
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 func (s *SongStorage) Remove(id int) error {
 	const op = "song_storage.delete"
@@ -18,7 +21,7 @@ func (s *SongStorage) Remove(id int) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("song with id %d not found", id)
+		return sql.ErrNoRows
 	}
 
 	return nil

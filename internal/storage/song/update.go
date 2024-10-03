@@ -1,11 +1,12 @@
 package song_storage
 
 import (
+	"database/sql"
 	"fmt"
-	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
+	storageModels "github.com/Olegsuus/SongApi/internal/storage/models"
 )
 
-func (s *SongStorage) Update(song *storage_models.Song) error {
+func (s *SongStorage) Update(song *storageModels.Song) error {
 	const op = "song_storage.update"
 
 	query := `
@@ -24,7 +25,7 @@ func (s *SongStorage) Update(song *storage_models.Song) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("song with id %d not found", song.ID)
+		return sql.ErrNoRows
 	}
 
 	return nil

@@ -3,11 +3,11 @@ package song_storage
 import (
 	"fmt"
 	"github.com/Olegsuus/SongApi/internal/models"
-	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
+	storageModels "github.com/Olegsuus/SongApi/internal/storage/models"
 	"strings"
 )
 
-func (s *SongStorage) GetMany(getManyS models.GetManySong, limit, offset int, sortFields []string, isAscending bool) ([]*storage_models.Song, error) {
+func (s *SongStorage) GetMany(getManyS models.GetManySong, limit, offset int, sortFields []string, isAscending bool) ([]*storageModels.Song, error) {
 	const op = "song_storage.get_many"
 
 	validSortFields := map[string]string{
@@ -53,9 +53,9 @@ func (s *SongStorage) GetMany(getManyS models.GetManySong, limit, offset int, so
 	}
 	defer rows.Close()
 
-	var songs []*storage_models.Song
+	var songs []*storageModels.Song
 	for rows.Next() {
-		var song storage_models.Song
+		var song storageModels.Song
 		if err := rows.Scan(&song.ID, &song.Group, &song.Song, &song.ReleaseDate, &song.Text, &song.Link, &song.CreatedAt, &song.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}

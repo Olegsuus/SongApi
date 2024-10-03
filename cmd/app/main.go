@@ -24,7 +24,7 @@ func main() {
 		}
 	}()
 
-	migrations.Migrations(cfg, db.DB)
+	migrations.Migrations(db.DB)
 
 	store := storage.NewStorage(db.DB)
 

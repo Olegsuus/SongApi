@@ -2,7 +2,7 @@ package migrations
 
 import (
 	"embed"
-	"github.com/Olegsuus/SongApi/internal/config"
+
 	"log"
 
 	"database/sql"
@@ -12,7 +12,7 @@ import (
 //go:embed migrations
 var embedMigrations embed.FS
 
-func Migrations(cfg *config.Config, db *sql.DB) {
+func Migrations(db *sql.DB) {
 
 	goose.SetBaseFS(embedMigrations)
 

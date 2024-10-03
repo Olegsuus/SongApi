@@ -1,6 +1,8 @@
 package song_services
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/Olegsuus/SongApi/internal/models"
 	"log/slog"
@@ -19,10 +21,16 @@ func (s *SongService) Update(song *models.Song) error {
 
 	err = s.srP.Update(storageSong)
 	if err != nil {
-		s.l.Error("Failed to update song", "id", song.ID, "error", err)
-		return fmt.Errorf("%s: %w", op, err)
+		if errors.Is(err, sql.ErrNoRows) {
+			s.l.Error("Не найден объект с таким id")
+			return err
+		} else {
+			s.l.Error("Не удалось обновить объект")
+			return fmt.Errorf("%s: %w", err)
+		}
 	}
 
 	s.l.Info("Successful updated song", "id", song.ID)
+
 	return nil
 }

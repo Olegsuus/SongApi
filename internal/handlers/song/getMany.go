@@ -8,6 +8,29 @@ import (
 	"strconv"
 )
 
+// GetMany       godoc
+// @Summary      Get a paginated list of songs
+// @Description  Retrieves a list of songs with optional filters, pagination, and sorting
+// @Tags         Song
+// @Accept       json
+// @Produce      json
+// @Param        page           query   int     false  "Page number (default is 1)"
+// @Param        size           query   int     false  "Page size (default is 5)"
+// @Param        isAscending    query   bool    false  "Sorting order (true for ascending, false for descending)"
+// @Param        group    		query   string  false  "Filter by group name"
+// @Param        song     		query   string  false  "Filter by song name"
+// @Param        release_date 	query string false  "Filter by release date"
+// @Param        text     		query   string  false  "Filter by text"
+// @Param        link     		query   string  false  "Filter by link"
+// @Param        group          query   bool    false  "Sort by group name"
+// @Param        song           query   bool    false  "Sort by song name"
+// @Param        releaseDate    query   bool    false  "Sort by release date"
+// @Param        text           query   bool    false  "Sort by text"
+// @Param        link           query   bool    false  "Sort by link"
+// @Success      200  {object}  models.GetManySongs "Successfully retrieved the list of songs"
+// @Failure      400  "Invalid query parameters"
+// @Failure      500  "Failed to retrieve the list of songs"
+// @Router       /songs [get]
 func (h *SongHandlers) GetMany(c echo.Context) error {
 	var getManySong models.GetManySong
 

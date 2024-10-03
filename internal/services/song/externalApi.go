@@ -38,8 +38,11 @@ func fetchFromLastFM(group, song string) (string, string, error) {
 		Track struct {
 			URL   string `json:"url"`
 			Album struct {
-				ReleaseDate string `json:"releaseDate"`
+				ReleaseDate string `json:"release_date"`
 			} `json:"album"`
+			Wiki struct {
+				Published string `json:"published"`
+			} `json:"wiki"`
 		} `json:"track"`
 	}
 
@@ -47,8 +50,12 @@ func fetchFromLastFM(group, song string) (string, string, error) {
 		return "", "", err
 	}
 
-	releaseDate := result.Track.Album.ReleaseDate
 	link := result.Track.URL
+
+	releaseDate := result.Track.Album.ReleaseDate
+	if releaseDate == "" {
+		releaseDate = result.Track.Wiki.Published
+	}
 
 	return releaseDate, link, nil
 }
@@ -83,21 +90,17 @@ func fetchLyrics(group, song string) (string, error) {
 func (s *SongService) fetchSongDetails(group, song string) (*ExternalAPI, error) {
 	const op = "song_services.fetchSongDetails"
 
-	// Получаем данные из Last.fm
 	releaseDate, link, err := fetchFromLastFM(group, song)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	// Получаем текст песни из Lyrics.ovh
 	text, err := fetchLyrics(group, song)
 	if err != nil {
 		s.l.Warn("Не удалось получить текст песни", "ошибка", err)
-		// Если текст не найден, оставляем пустую строку
 		text = ""
 	}
 
-	// Возвращаем обогащенные данные
 	return &ExternalAPI{
 		ReleaseDate: releaseDate,
 		Text:        text,

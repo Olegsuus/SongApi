@@ -2,10 +2,10 @@ package song_storage
 
 import (
 	"fmt"
-	storage_models "github.com/Olegsuus/SongApi/internal/storage/models"
+	storageModels "github.com/Olegsuus/SongApi/internal/storage/models"
 )
 
-func (s *SongStorage) Add(song *storage_models.Song) (int, error) {
+func (s *SongStorage) Add(song *storageModels.Song) (int, error) {
 	const op = "song_storage.add"
 
 	query := `
